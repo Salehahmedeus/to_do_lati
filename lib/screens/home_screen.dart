@@ -21,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // يتم استخدام listen: false هنا لتفادي إعادة بناء واجهة المستخدم عند الاستدعاء
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<TasksProvider>(context, listen: false).getTasks();
     });
