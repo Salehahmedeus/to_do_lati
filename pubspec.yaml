@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: 
   intl: 
   timeago: ^3.7.0
+  shared_preferences:
+  provider:
 
 
 

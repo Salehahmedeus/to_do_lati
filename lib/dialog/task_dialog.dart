@@ -8,7 +8,7 @@ class AddTaskDialog extends StatefulWidget {
     required this.formKey,
     required this.onTap,
   });
-  
+
   final TextEditingController titleController;
   final TextEditingController subTitleController;
   final GlobalKey<FormState> formKey;

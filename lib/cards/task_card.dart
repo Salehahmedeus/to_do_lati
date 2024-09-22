@@ -9,11 +9,13 @@ class TaskCard extends StatelessWidget {
     super.key,
     required this.taskModel,
     required this.onTap,
+    required this.onToggleComplete,
     required this.delete,
   });
 
   final TaskModel taskModel;
   final Function onTap;
+  final Function onToggleComplete;
   final Function delete;
 
   @override
@@ -29,12 +31,12 @@ class TaskCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Colors.blue[300],
+          color: Colors.blueAccent, 
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.blue.withOpacity(0.4), 
                 blurRadius: 8,
-                offset: const Offset(0, 4),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -48,7 +50,7 @@ class TaskCard extends StatelessWidget {
                     Checkbox(
                       value: taskModel.isCompleted,
                       onChanged: (check) {
-                        onTap();
+                        onToggleComplete(); 
                       },
                       activeColor: Colors.white,
                       checkColor: Colors.blue,
@@ -59,10 +61,15 @@ class TaskCard extends StatelessWidget {
                       children: [
                         Text(
                           taskModel.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: taskModel.isCompleted
+                                ? Colors.grey 
+                                : Colors.white, 
+                            decoration: taskModel.isCompleted
+                                ? TextDecoration.lineThrough 
+                                : TextDecoration.none,
                           ),
                         ),
                         if (taskModel.subtitle != null)
