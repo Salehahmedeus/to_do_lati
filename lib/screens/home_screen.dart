@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_lati/cards/task_card.dart';
+import 'package:to_do_lati/dialog/task_dialog.dart';
 import 'package:to_do_lati/models/task_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,44 +13,77 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  TextEditingController taskTitleController = TextEditingController();
+  TextEditingController taskSubtitleController = TextEditingController();
+
   List<TaskModel> tasks = [];
-  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+                backgroundColor: Colors.blue,
+        child: const Icon(Icons.add,color: Colors.white,),
         onPressed: () {
-          setState(() {
-            tasks.add(TaskModel(
-                title: "Task ${tasks.length}",
-                subtitle:
-                    tasks.length.isOdd ? null : "Subtitle ${tasks.length}",
-                createdAt: DateTime.now()));
-          });
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AddTaskDialog(
+                titleController: taskTitleController,
+                subTitleController: taskSubtitleController,
+                formKey: formKey,
+                onTap: () {
+                  tasks.add(TaskModel(
+                      title: taskTitleController.text,
+                      subtitle: taskSubtitleController.text.isEmpty
+                          ? null
+                          : taskSubtitleController.text,
+                      createdAt: DateTime.now()));
+
+                  setState(() {});
+
+                  taskTitleController.clear();
+                  taskSubtitleController.clear();
+
+                  Navigator.pop(context);
+                },
+              );
+            },
+          );
         },
       ),
       appBar: AppBar(
-        title: const Text("TODO"),
+        centerTitle :true,
+        backgroundColor: Colors.blue,
+        title: const Text("TODO",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+
+        ),
+        
       ),
       body: DefaultTabController(
         length: 2,
         child: Column(
           children: [
             const TabBar(
-                isScrollable: false,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: Colors.blue,
-                tabs: [
-                  Tab(
-                    text: "Waiting",
-                  ),
-                  Tab(
-                    text: "Completed",
-                  )
-                ]),
+              isScrollable: false,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.blue,
+              tabs: [
+                Tab(
+                  text: "Waiting",
+                ),
+                Tab(
+                  text: "Completed",
+                ),
+              ],
+            ),
             Expanded(
               child: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
@@ -59,20 +94,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       return tasks[index].isCompleted
                           ? const SizedBox()
-                          : ListTile(
-                              tileColor: Colors.blue.withOpacity(0.1),
-                              trailing: Checkbox(
-                                value: tasks[index].isCompleted,
-                                onChanged: (check) {
-                                  setState(() {
-                                    tasks[index].isCompleted = check!;
-                                  });
-                                },
-                              ),
-                              title: Text(tasks[index].title),
-                              subtitle: tasks[index].subtitle != null
-                                  ? Text(tasks[index].subtitle!)
-                                  : null,
+                          : TaskCard(
+                              taskModel: tasks[index],
+                              onTap: () {
+                                setState(() {
+                                  tasks[index].isCompleted =
+                                      !tasks[index].isCompleted;
+                                });
+                              },
+                              delete: () {
+                                setState(() {
+                                  tasks.removeAt(index);
+                                });
+                              },
                             );
                     },
                   ),
@@ -82,20 +116,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       return !tasks[index].isCompleted
                           ? const SizedBox()
-                          : ListTile(
-                              tileColor: Colors.blue.withOpacity(0.1),
-                              trailing: Checkbox(
-                                value: tasks[index].isCompleted,
-                                onChanged: (check) {
-                                  setState(() {
-                                    tasks[index].isCompleted = check!;
-                                  });
-                                },
-                              ),
-                              title: Text(tasks[index].title),
-                              subtitle: tasks[index].subtitle != null
-                                  ? Text(tasks[index].subtitle!)
-                                  : null,
+                          : TaskCard(
+                              taskModel: tasks[index],
+                              onTap: () {
+                                setState(() {
+                                  tasks[index].isCompleted =
+                                      !tasks[index].isCompleted;
+                                });
+                              },
+                              delete: () {
+                                setState(() {
+                                  tasks.removeAt(index);
+                                });
+                              },
                             );
                     },
                   ),
