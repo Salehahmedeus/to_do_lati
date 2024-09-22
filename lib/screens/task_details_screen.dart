@@ -23,7 +23,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(width: double.infinity, height: 150),
+            const SizedBox(width: double.infinity, height: 150),
             Text(
               "Title : ${widget.taskModel.title}",
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
