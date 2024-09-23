@@ -15,42 +15,47 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Task Details"),
+backgroundColor: Colors.blue
+        ,title: const Text("Task Details",
+        style: TextStyle(
+          color: Colors.white
+        ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(width: double.infinity, height: 150),
-            Text(
-              "Title : ${widget.taskModel.title}",
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            if (widget.taskModel.subtitle != null)
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: double.infinity),
               Text(
-                "Subtitle : ${widget.taskModel.subtitle}",
-                style: const TextStyle(
-                    fontSize: 26, fontWeight: FontWeight.normal),
+                "Title : ${widget.taskModel.title}",
+                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-            Icon(
-              widget.taskModel.isCompleted
-                  ? Icons.check
-                  : Icons.cancel_outlined,
-              size: 200,
-              color: widget.taskModel.isCompleted ? Colors.green : Colors.red,
-            ),
-            Text(
-              "Created At : ${widget.taskModel.createdAt.toString().substring(0, 10).replaceAll("-", "/")}",
-              style:
-                  const TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
-            ),
-            const SizedBox(
-              height: 150,
-            ),
-          ],
+              if (widget.taskModel.subtitle != null)
+                Text(
+                  "Subtitle : ${widget.taskModel.subtitle}",
+                  style: const TextStyle(
+                      fontSize: 26, fontWeight: FontWeight.normal),
+                ),
+              Icon(
+                widget.taskModel.isCompleted
+                    ? Icons.check
+                    : Icons.cancel_outlined,
+                size: 200,
+                color: widget.taskModel.isCompleted ? Colors.green : Colors.red,
+              ),
+              Text(
+                "Created At : ${widget.taskModel.createdAt.toString().substring(0, 10).replaceAll("-", "/")}",
+                style:
+                    const TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
+              ),
+              
+            ],
+          ),
         ),
       ),
     );

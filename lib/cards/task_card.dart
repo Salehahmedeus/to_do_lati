@@ -11,12 +11,14 @@ class TaskCard extends StatelessWidget {
     required this.onTap,
     required this.onToggleComplete,
     required this.delete,
+    //  required this.edit,
   });
 
   final TaskModel taskModel;
   final Function onTap;
   final Function onToggleComplete;
   final Function delete;
+  // final Function edit;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +103,16 @@ class TaskCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                // IconButton(
+                //   onPressed: () {
+                //     edit();
+                //   },
+                //   icon: const Icon(
+                //     Icons.edit,
+                //     color: Colors.brown,
+                //     size: 28,
+                //   ),
+                // ),
                 IconButton(
                   onPressed: () {
                     delete();
