@@ -38,36 +38,41 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   DrawerTile(
-                    icon :darkModeProvider.isDark
-                            ? Icons.dark_mode
-                            : Icons.light_mode,
-                    Text: darkModeProvider.isDark == true
-                                ? "Dark Mode"
-                                : "Light Mode",
-                    onTap: (){
-                      darkModeProvider.SwitchMode();
-                    },        
+                    icon: darkModeProvider.isDark
+                        ? Icons.dark_mode
+                        : Icons.light_mode,
+                    text: darkModeProvider.isDark ? "Dark Mode" : "Light Mode",
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Icon(
-                        darkModeProvider.isDark
-                            ? Icons.dark_mode
-                            : Icons.light_mode,
-                      ),
+                          darkModeProvider.isDark
+                              ? Icons.dark_mode
+                              : Icons.light_mode,
+                          color: darkModeProvider.isDark
+                              ? Colors.white
+                              : Colors.black),
                       SizedBox(
                         width: 250,
                         child: SwitchListTile(
-                            title: Text(darkModeProvider.isDark == true
+                          activeColor: darkModeProvider.isDark
+                              ? Colors.white
+                              : Colors.black,
+                          title: Text(
+                            darkModeProvider.isDark == true
                                 ? "Dark Mode"
-                                : "Light Mode"),
-                            value: darkModeProvider.isDark,
-                            onChanged: (value) {
-                              darkModeProvider.SwitchMode();
-                            },
-                            activeColor: darkModeProvider.isDark == true
-                                ? Colors.black
-                                : Colors.white),
+                                : "Light Mode",
+                            style: TextStyle(
+                                color: darkModeProvider.isDark
+                                    ? Colors.white
+                                    : Colors.black),
+                          ),
+                          value: darkModeProvider.isDark,
+                          onChanged: (value) {
+                            darkModeProvider.SwitchMode();
+                          },
+                        ),
                       ),
                     ],
                   )
@@ -84,7 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
+            backgroundColor:
+                darkModeProvider.isDark ? Colors.white : Colors.blue,
+            child: Icon(Icons.add,
+                color: darkModeProvider.isDark ? Colors.blue : Colors.white),
             onPressed: () {
               showDialog(
                 context: context,
@@ -119,11 +127,12 @@ class _HomeScreenState extends State<HomeScreen> {
             length: 2,
             child: Column(
               children: [
-                const TabBar(
-                  labelColor: Colors.black,
+                TabBar(
+                  labelColor:
+                      darkModeProvider.isDark ? Colors.white : Colors.black,
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: Colors.blue,
-                  tabs: [
+                  tabs: const [
                     Tab(text: "Pending Tasks"),
                     Tab(text: "Completed Tasks"),
                   ],
@@ -132,8 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: TabBarView(
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      buildTaskList(tasksProvider, false),
-                      buildTaskList(tasksProvider, true),
+                      buildTaskList(tasksProvider, false, darkModeProvider),
+                      buildTaskList(tasksProvider, true, darkModeProvider),
                     ],
                   ),
                 ),
@@ -145,14 +154,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildTaskList(TasksProvider tasksProvider, bool isCompleted) {
+  Widget buildTaskList(TasksProvider tasksProvider, bool isCompleted,
+      DarkModeProvider darkModeProvider) {
     final filteredTasks = tasksProvider.tasks
         .where((task) => task.isCompleted == isCompleted)
         .toList();
 
     if (filteredTasks.isEmpty) {
-      return const Center(
-        child: Text("No tasks available."),
+      return Center(
+        child: Text(
+          "No tasks available.",
+          style: TextStyle(
+              color: darkModeProvider.isDark ? Colors.white : Colors.black),
+        ),
       );
     }
 
