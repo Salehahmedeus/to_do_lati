@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_lati/cards/task_card.dart';
-import 'package:to_do_lati/dialog/task_dialog.dart';
+import 'package:provider/provider.dart';
 import 'package:to_do_lati/models/task_model.dart';
+import 'package:to_do_lati/providers/dark_mode_provider.dart';
+import 'package:to_do_lati/providers/task_provider.dart';
+import 'package:to_do_lati/widgets/clickables/drawer_tile.dart';
+import 'package:to_do_lati/widgets/dialogs/add_task_dialog.dart';
+import 'package:to_do_lati/widgets/cards/task_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -13,131 +17,128 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController taskTitleController = TextEditingController();
   TextEditingController taskSubtitleController = TextEditingController();
 
-  List<TaskModel> tasks = [];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-                backgroundColor: Colors.blue,
-        child: const Icon(Icons.add,color: Colors.white,),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AddTaskDialog(
-                titleController: taskTitleController,
-                subTitleController: taskSubtitleController,
-                formKey: formKey,
-                onTap: () {
-                  tasks.add(TaskModel(
-                      title: taskTitleController.text,
-                      subtitle: taskSubtitleController.text.isEmpty
-                          ? null
-                          : taskSubtitleController.text,
-                      createdAt: DateTime.now()));
-
-                  setState(() {});
-
-                  taskTitleController.clear();
-                  taskSubtitleController.clear();
-
-                  Navigator.pop(context);
-                },
-              );
-            },
-          );
-        },
-      ),
-      appBar: AppBar(
-        centerTitle :true,
-        backgroundColor: Colors.blue,
-        title: const Text("TODO",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-
-        ),
-        
-      ),
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            const TabBar(
-              isScrollable: false,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.blue,
-              tabs: [
-                Tab(
-                  text: "Waiting",
-                ),
-                Tab(
-                  text: "Completed",
-                ),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  ListView.builder(
-                    padding: const EdgeInsets.all(24),
-                    itemCount: tasks.length,
-                    itemBuilder: (context, index) {
-                      return tasks[index].isCompleted
-                          ? const SizedBox()
-                          : TaskCard(
-                              taskModel: tasks[index],
-                              onTap: () {
-                                setState(() {
-                                  tasks[index].isCompleted =
-                                      !tasks[index].isCompleted;
-                                });
-                              },
-                              delete: () {
-                                setState(() {
-                                  tasks.removeAt(index);
-                                });
-                              },
-                            );
-                    },
+    return Consumer<DarkModeProvider>(builder: (context, darkModeConsumer, _) {
+      return Consumer<TasksProvider>(builder: (context, tasksConsumer, _) {
+        return Scaffold(
+            drawer: Drawer(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      DrawerTile(
+                          text: darkModeConsumer.isDark
+                              ? "Light Mode"
+                              : "Dark Mode",
+                          onTab: () {
+                            Provider.of<DarkModeProvider>(context,
+                                    listen: false)
+                                .switchMode();
+                          },
+                          icon: darkModeConsumer.isDark
+                              ? Icons.light_mode
+                              : Icons.dark_mode),
+                    ],
                   ),
-                  ListView.builder(
-                    padding: const EdgeInsets.all(24),
-                    itemCount: tasks.length,
-                    itemBuilder: (context, index) {
-                      return !tasks[index].isCompleted
-                          ? const SizedBox()
-                          : TaskCard(
-                              taskModel: tasks[index],
-                              onTap: () {
-                                setState(() {
-                                  tasks[index].isCompleted =
-                                      !tasks[index].isCompleted;
-                                });
-                              },
-                              delete: () {
-                                setState(() {
-                                  tasks.removeAt(index);
-                                });
-                              },
-                            );
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
+            floatingActionButton: FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AddTaskDialog(
+                            titleController: taskTitleController,
+                            subTitleController: taskSubtitleController,
+                            onTap: () {
+                              Provider.of<TasksProvider>(context, listen: false)
+                                  .addTask(TaskModel(
+                                      title: taskTitleController.text,
+                                      subTitle:
+                                          taskSubtitleController.text.isEmpty
+                                              ? null
+                                              : taskSubtitleController.text,
+                                      createdAt:
+                                          DateTime.now().toIso8601String()));
+                              taskTitleController.clear();
+                              taskSubtitleController.clear();
+                              Navigator.pop(context);
+                            });
+                      });
+                }),
+            appBar: AppBar(
+              title: const Text("TODO"),
+            ),
+            body: DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  const TabBar(
+                      isScrollable: false,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Colors.blue,
+                      tabs: [
+                        Tab(
+                          text: "Waiting",
+                        ),
+                        Tab(
+                          text: "Completed",
+                        )
+                      ]),
+                  Expanded(
+                    child: TabBarView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          ListView.builder(
+                            padding: const EdgeInsets.all(24),
+                            itemCount: tasksConsumer.tasks.length,
+                            itemBuilder: (context, index) {
+                              return tasksConsumer.tasks[index].isCompleted
+                                  ? const SizedBox()
+                                  : TaskCard(
+                                      taskModel: tasksConsumer.tasks[index],
+                                      onTap: () {
+                                        Provider.of<TasksProvider>(context,
+                                                listen: false)
+                                            .switchValue(
+                                                tasksConsumer.tasks[index]);
+                                      });
+                            },
+                          ),
+                          ListView.builder(
+                            padding: const EdgeInsets.all(24),
+                            itemCount: tasksConsumer.tasks.length,
+                            itemBuilder: (context, index) {
+                              return !tasksConsumer.tasks[index].isCompleted
+                                  ? const SizedBox()
+                                  : TaskCard(
+                                      taskModel: tasksConsumer.tasks[index],
+                                      onTap: () {
+                                        Provider.of<TasksProvider>(context,
+                                                listen: false)
+                                            .switchValue(
+                                                tasksConsumer.tasks[index]);
+                                      });
+                            },
+                          ),
+                        ]),
+                  )
+                ],
+              ),
+            ));
+      });
+    });
   }
 }
